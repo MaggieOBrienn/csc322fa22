@@ -1,0 +1,334 @@
+import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/build/three.module.js';
+
+const canvas = document.querySelector("canvas");
+const canvasWidth = 600;
+const canvasHeight = 600;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x82CAFF);
+const camera = new THREE.PerspectiveCamera(75, 600 / 600, 900);
+camera.position.z = 1000;
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(600, 600);
+document.body.appendChild(renderer.domElement);
+
+let layer1 = new THREE.Group();
+scene.add(layer1);
+createSun(layer1);
+createClouds(layer1);
+
+let layer2 = new THREE.Group();
+scene.add(layer2);
+createMountain2(layer2);
+
+let layer3 = new THREE.Group();
+scene.add(layer3);
+createMountain1(layer3);
+createMountain3(layer3);
+
+let layer4 = new THREE.Group();
+scene.add(layer4);
+createGrass(layer4);
+growGrass(layer4);
+createPond(layer4);
+createFish(layer4);
+createStump(layer4);
+createLeaves(layer4);
+
+let group = new THREE.Group();
+scene.add(group);
+createBirds(group);
+
+let startPos = {};
+savePos()
+
+animate();
+
+window.addEventListener('mousemove', animate);
+
+function animate(event) {
+	requestAnimationFrame(()=>animate(event));
+  move(group);
+  
+  if(event){
+  	var xPos = event.clientX - 300;
+    var yPos = -(event.clientY - 300);
+    
+    layer1.position.x = startPos.layer11.x + (xPos*1*0.15);
+    layer1.position.y = startPos.layer11.y + (yPos*1*0.15);
+    
+    layer2.position.x = startPos.layer22.x + (xPos*2*0.15);
+    layer2.position.y = startPos.layer22.y + (yPos*2*0.15);
+    
+    layer3.position.x = startPos.layer33.x + (xPos*3*0.15);
+    layer3.position.y = startPos.layer33.y + (yPos*3*0.15);
+    
+    layer4.position.x = startPos.layer44.x + (xPos*4*0.15);
+    layer4.position.y = startPos.layer44.y + (yPos*4*0.15);
+  }
+  
+  renderer.render(scene, camera);
+}
+
+function savePos()
+{
+	startPos = {
+  	layer11: layer1.position.clone(),
+    layer22: layer2.position.clone(),
+    layer33: layer3.position.clone(),
+    layer44: layer4.position.clone()
+  }
+}
+
+function createGrass(layer4){
+	const geometry = new THREE.PlaneGeometry(100000,1200,1);
+	const material = new THREE.MeshBasicMaterial({ color: 0x803AC13 });
+	const grass = new THREE.Mesh(geometry, material);
+  grass.position.y = -1000
+	layer4.add(grass);	
+}
+
+function growGrass(layer4){
+	const grassBlades = new THREE.Group();
+  
+  for(let x=-1500; x < 1000; x += 40){
+  	const geometry1 = new THREE.PlaneGeometry(15,50,1);
+    const material1 = new THREE.MeshBasicMaterial({ color: 0x803AC13 });
+    const blades = new THREE.Mesh(geometry1, material1);
+    blades.position.x = x;
+    blades.position.y = -375;
+    grassBlades.add(blades);
+  }
+  
+  layer4.add(grassBlades);
+}
+
+function createMountain1(layer3){
+	const triOne = new THREE.BufferGeometry();
+  const points1 = new Float32Array([
+  -1050, -600, 0,
+  -400, 250, 0,
+  250, -600, 0,
+  ]);
+  const indices1 = [0,2,1];
+  triOne.setIndex(indices1);
+  triOne.setAttribute('position', new THREE.BufferAttribute(points1, 3));
+  const material5 = new THREE.MeshBasicMaterial({color: randColor()});
+  const mount1 = new THREE.Mesh(triOne, material5);
+  layer3.add(mount1);
+} 
+ 
+function createMountain2(layer2){
+	const mount = new THREE.Group();
+	const triTwo = new THREE.BufferGeometry();
+  const points2 = new Float32Array([
+  -600, -600, 0,
+  0, 375, 0,
+  600, -600, 0,
+  ]);
+  const indices2 = [0,2,1];
+  triTwo.setIndex(indices2);
+  triTwo.setAttribute('position', new THREE.BufferAttribute(points2, 3));
+  const material6 = new THREE.MeshBasicMaterial({color: randColor()});
+  const mount2 = new THREE.Mesh(triTwo, material6);
+  mount.add(mount2);
+  
+  const snow = new THREE.BufferGeometry();
+  const pointsS = new Float32Array([
+  -71, 260, 0,
+  0, 375, 0,
+  73, 260, 0,
+  ]);
+  const indicesS = [0,2,1];
+  snow.setIndex(indicesS);
+  snow.setAttribute('position', new THREE.BufferAttribute(pointsS, 3));
+  const materialS = new THREE.MeshBasicMaterial({color: 'white'});
+  const snowCap = new THREE.Mesh(snow, materialS);
+  mount.add(snowCap);
+  
+  layer2.add(mount);
+} 
+
+function createMountain3(layer3){
+	const triThree = new THREE.BufferGeometry();
+  const points3 = new Float32Array([
+  50, -600, 0,
+  600, 200, 0,
+  1250, -600, 0,
+  ]);
+  const indices3 = [0,2,1];
+  triThree.setIndex(indices3);
+  triThree.setAttribute('position', new THREE.BufferAttribute(points3, 3));
+  const material7 = new THREE.MeshBasicMaterial({color: randColor()});
+  const mount3 = new THREE.Mesh(triThree, material7);
+  layer3.add(mount3);
+} 
+
+function randColor(){
+  var col = "rgb(";
+  for(let x=0; x<3; x++)
+  {
+  	col += Math.floor(Math.random()*256);
+    if(x==2)
+    {
+    	col += ")";
+    }
+    else
+    {
+    	col += ",";
+    }
+  }
+  return col;
+}
+ 
+function createSun(layer1){
+	const circ = new THREE.Shape();
+  circ.absellipse(460, 525, 100, 100);
+  const geometry4 = new THREE.ShapeBufferGeometry(circ);
+  const material4 = new THREE.MeshBasicMaterial({color: 0xFEE12B});
+  const sun = new THREE.Mesh(geometry4, material4);
+  layer1.add(sun);
+}
+
+function createBirds(group){
+  let xPos = 0;
+  let yPos = 315;
+  for(let x=0; x<5; x++)
+  { 
+    const birdy = new THREE.Group();
+    let y = 0;
+    while(y<3)
+    {
+      const points4 = [];
+      points4.push(new THREE.Vector2(xPos, yPos));
+      if(y==0)
+      {
+          points4.push(new THREE.Vector2(xPos-45,yPos+15));
+      }
+      else
+      {
+          points4.push(new THREE.Vector2(xPos+45,yPos+15));
+      }
+      const brd = new THREE.BufferGeometry().setFromPoints(points4);
+      const material7 = new THREE.LineBasicMaterial({color: 'black'});
+      const bird = new THREE.Line(brd, material7);
+      birdy.add(bird);
+      y++;
+    }
+    group.add(birdy);
+    xPos -= 90;
+    yPos -= 50;
+  }
+
+}
+
+function move(group){
+	group.position.x += 0.1;
+  if(group.position.x > 1200)
+  {
+  	group.position.x = -800;
+  }
+}
+
+function createStump(layer4){
+	const geometry2 = new THREE.PlaneGeometry(75, 200, 1);
+  const material2 = new THREE.MeshBasicMaterial({ color: 0x5C2C06 });
+  const stump = new THREE.Mesh(geometry2, material2);
+  stump.position.x = 225;
+  stump.position.y = -450;
+  layer4.add(stump);
+}
+
+function createLeaves(layer4){
+	const curve = new THREE.Shape();
+  curve.absellipse(225, -225, 100, 175);
+  const geometry3 = new THREE.ShapeBufferGeometry(curve);
+  const material3 = new THREE.MeshBasicMaterial({color: 0x28EB57});
+  const leaves = new THREE.Mesh(geometry3, material3);
+  layer4.add(leaves);
+}
+
+function createClouds(layer1){
+	const cloud1 = new THREE.Group();
+  
+  const curve1 = new THREE.Shape();
+  curve1.absellipse(-450, 500, 200, 90);
+  const geometry3 = new THREE.ShapeBufferGeometry(curve1);
+  const material3 = new THREE.MeshBasicMaterial({color: 0xD6CFC7});
+  const puff = new THREE.Mesh(geometry3, material3);
+  cloud1.add(puff);
+  
+  const curve2 = new THREE.Shape();
+  curve2.absellipse(-530, 500, 75, 125);
+  const geometry4 = new THREE.ShapeBufferGeometry(curve2);
+  const puff2 = new THREE.Mesh(geometry4, material3);
+  cloud1.add(puff2);
+  
+  const curve3 = new THREE.Shape();
+  curve3.absellipse(-370, 500, 75, 125);
+  const geometry5 = new THREE.ShapeBufferGeometry(curve3);
+  const puff3 = new THREE.Mesh(geometry5, material3);
+  cloud1.add(puff3);
+  
+  const curve4 = new THREE.Shape();
+  curve4.absellipse(-450, 500, 75, 115);
+  const geometry6 = new THREE.ShapeBufferGeometry(curve4);
+  const puff4 = new THREE.Mesh(geometry6, material3);
+  cloud1.add(puff4);
+  
+  layer1.add(cloud1);
+}
+
+function createPond(layer4){
+	const curve = new THREE.Shape();
+  curve.absellipse(-325, -575, 200, 125);
+  const geometry3 = new THREE.ShapeBufferGeometry(curve);
+  const material3 = new THREE.MeshBasicMaterial({color: 0x0492C2});
+  const pond = new THREE.Mesh(geometry3, material3);
+  layer4.add(pond);
+}
+
+function createFish(layer4){
+	const fish = new THREE.Group();
+	const curve = new THREE.Shape();
+  curve.absellipse(-300, -575, 30, 20);
+  const geometry3 = new THREE.ShapeBufferGeometry(curve);
+  const material3 = new THREE.MeshBasicMaterial({color: 0xB90E0A});
+  const head = new THREE.Mesh(geometry3, material3);
+  fish.add(head);
+  
+  const tri = new THREE.BufferGeometry();
+  const points3 = new Float32Array([
+  -330, -575, 0,
+  -340, -555, 0,
+  -340, -595, 0,
+  ]);
+  const indices3 = [0,1,2];
+  tri.setIndex(indices3);
+  tri.setAttribute('position', new THREE.BufferAttribute(points3, 3));
+  const material7 = new THREE.MeshBasicMaterial({color: 0xB90E0A});
+  const tail = new THREE.Mesh(tri, material7);
+  fish.add(tail);
+  
+  const curve1 = new THREE.Shape();
+  curve1.absellipse(-280, -550, 5, 5);
+  const geometry4 = new THREE.ShapeBufferGeometry(curve1);
+  const material4 = new THREE.MeshBasicMaterial({color: 0xC6E6FB});
+  const bub1 = new THREE.Mesh(geometry4, material4);
+  fish.add(bub1);
+  
+  const curve2 = new THREE.Shape();
+  curve2.absellipse(-270, -540, 5, 5);
+  const geometry5 = new THREE.ShapeBufferGeometry(curve2);
+  const bub2 = new THREE.Mesh(geometry5, material4);
+  fish.add(bub2);
+  
+  const curve3 = new THREE.Shape();
+  curve3.absellipse(-280, -530, 5, 5);
+  const geometry6 = new THREE.ShapeBufferGeometry(curve3);
+  const bub3 = new THREE.Mesh(geometry6, material4);
+  fish.add(bub3);
+  
+  layer4.add(fish)
+}
